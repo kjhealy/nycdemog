@@ -1,0 +1,55 @@
+authors:
+  Kieran Healy:
+    href: https://kieranhealy.org
+
+url: https://kjhealy.github.io/nycdemog/
+template:
+  bootstrap: 5
+  bslib:
+    base_font: {google: "IBM Plex Sans"}
+    heading_font: {google: "IBM Plex Sans"}
+    code_font: {google: "IBM Plex Mono"}
+
+reference:
+  - title: "Wrapper functions"
+    desc: Thin wrappers around tidycensus that hardcode NYC counties.
+    contents:
+      - nyc_counties
+      - nyc_county_fips
+      - get_nyc_acs
+      - get_nyc_decennial
+      - load_nyc_variables
+
+  - title: "Datasets - Decennial Census 2020"
+    desc: Tract- and block-level demographic tables from the 2020 Decennial Census.
+    contents:
+      - nyc_block_20_race_df
+      - nyc_block_20_adults_df
+      - nyc_tract_20_age_sex_df
+      - nyc_tract_20_household_df
+
+  - title: "Datasets - American Community Survey"
+    desc: Tract-level demographic tables from the most recent ACS 5-year estimates.
+    contents:
+      - nyc_tract_acs_race_df
+      - nyc_tract_acs_income_df
+      - nyc_tract_acs_education_df
+      - nyc_tract_acs_employment_df
+      - nyc_tract_acs_housing_df
+      - nyc_tract_acs_language_nativity_df
+
+navbar:
+  right:
+   - icon: fa-github
+     href: https://github.com/kjhealy/nycdemog
+     aria-label: GitHub repository
+
+figures:
+  dev: grDevices::png
+  dpi: 600
+  dev.args: []
+  fig.ext: png
+  fig.width: 7.2916667
+  fig.height: ~
+  fig.retina: 2
+  fig.asp: 1.618

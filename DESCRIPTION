@@ -1,0 +1,36 @@
+Package: nycdemog
+Title: New York City Demographic Data from the Census
+Version: 0.0.1.9000
+Authors@R:
+    person("Kieran", "Healy", , "kjhealy@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "https://orcid.org/0000-0001-9114-981X"))
+Description: Tract- and block-level demographic data for the five
+    counties of New York City, derived from the US Census Bureau via
+    'tidycensus'. Provides curated tibbles keyed by GEOID and thin
+    wrapper functions for fetching custom NYC slices on demand.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cli,
+    dplyr (>= 1.1.0),
+    rlang,
+    tidycensus,
+    tidyr
+Suggests:
+    censusapi,
+    ggplot2,
+    nycmaps,
+    sf,
+    testthat (>= 3.0.0),
+    tibble (>= 3.0.0),
+    withr
+LazyData: true
+LazyDataCompression: xz
+Config/testthat/edition: 3
+URL: https://kjhealy.github.io/nycdemog/,
+    https://github.com/kjhealy/nycdemog
+BugReports: https://github.com/kjhealy/nycdemog/issues
