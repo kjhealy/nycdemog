@@ -20,9 +20,15 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The nycdemog package provides tract- and block-level demographic data for the five counties of New York City, derived from the US Census Bureau via [tidycensus](https://walker-data.com/tidycensus/). It ships a curated set of tibbles keyed by `geoid` covering race, age and sex, household structure, income and poverty, education, employment, housing, and language and nativity, alongside thin wrapper functions that make custom NYC-only Census queries painless.
+The nycdemog package provides tract- and block-level demographic data for the
+five counties of New York City, derived from the US Census Bureau via
+[tidycensus](https://walker-data.com/tidycensus/). It provides a set of tibbles
+keyed by `geoid` covering race, age and sex, household structure, income and
+poverty, education, employment, housing, and language and nativity, alongside
+thin wrapper functions that help you make NYC-only queries against the Census API.
 
-All datasets join 1:1 to the corresponding `sf` objects in [nycmaps](https://github.com/kjhealy/nycmaps) on the `geoid` column.
+All datasets join 1:1 to corresponding `sf` objects in the
+[nycmaps](https://github.com/kjhealy/nycmaps) package, on the `geoid` column.
 
 ## Installation
 
@@ -33,11 +39,15 @@ You can install the development version of nycdemog from [GitHub](https://github
 pak::pak("kjhealy/nycdemog")
 ```
 
-The pre-built data tables work offline. The wrapper functions hit the Census API and require a key, set as the `CENSUS_API_KEY` environment variable.
+The pre-built data tables are in the package. The wrapper functions pull from
+the Census API and require you have a [Census API
+key](https://api.census.gov/data/key_signup.html), set as the `CENSUS_API_KEY`
+environment variable.
 
 ## Stored datasets
 
-Every shipped tibble has `geoid` and `county` as its first two columns. ACS estimates are paired with `_moe` margin-of-error columns.
+Every shipped tibble has `geoid` and `county` as its first two columns. ACS
+estimates have `_moe` margin-of-error columns.
 
 ```{r stored}
 library(tibble)
