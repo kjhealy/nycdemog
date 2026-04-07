@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# nycdemog
+# nycdemog <img src="man/figures/nycdemog.png" align="right" width="360">
 
 <!-- badges: start -->
 
@@ -141,3 +141,7 @@ nyc_census_tracts_2020_sf |>
 ```
 
 <img src="man/figures/README-map-1.png" alt="Choropleth of NYC Census tracts shaded by median household income." width="100%" />
+
+–
+
+Hex photo: Detail from Bernard Safran, “Crowded Street”, c.1970.

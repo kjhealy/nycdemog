@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# nycdemog
+# nycdemog <img src="man/figures/nycdemog.png" align="right" width="360">
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -119,3 +119,7 @@ nyc_census_tracts_2020_sf |>
   labs(fill = "Median\nhousehold\nincome") +
   theme_void()
 ```
+
+--
+
+Hex photo: Detail from Bernard Safran, "Crowded Street", c.1970.
