@@ -27,10 +27,18 @@ check_census_key <- function(call = rlang::caller_env()) {
 # Standardise a tidycensus result for NYC use.
 #
 # - Lowercase column names
-# - Move `geoid` to the front and add a `county` label derived from the
-#   first five characters of `geoid`
+# - Move `geoid` to the front and add a `county` label. For tract / block /
+#   block group results, the county is derived from the first five
+#   characters of `geoid`. For PUMA results, the county (borough) is
+#   looked up from the internal NYC PUMA crosswalk using the supplied
+#   `vintage`, and rows outside NYC are dropped.
 # - Optionally pivot from tidy long to wide
-tidy_census_result <- function(x, output = c("wide", "tidy")) {
+tidy_census_result <- function(
+  x,
+  output = c("wide", "tidy"),
+  geography = "tract",
+  vintage = "2020"
+) {
   output <- rlang::arg_match(output)
 
   names(x) <- tolower(names(x))
@@ -53,14 +61,21 @@ tidy_census_result <- function(x, output = c("wide", "tidy")) {
     }
   }
 
-  fips <- nyc_county_fips()
-  county_lookup <- stats::setNames(names(fips), unname(fips))
-
-  x <- dplyr::mutate(
-    x,
-    county = unname(county_lookup[substr(.data$geoid, 1L, 5L)]),
-    .after = "geoid"
-  )
+  if (geography == "puma") {
+    xwalk <- nyc_pumas_xwalk[
+      nyc_pumas_xwalk$vintage == vintage,
+      c("geoid", "county"),
+      drop = FALSE
+    ]
+    x <- dplyr::inner_join(x, xwalk, by = "geoid")
+  } else {
+    fips <- nyc_county_fips()
+    county_lookup <- stats::setNames(names(fips), unname(fips))
+    x <- dplyr::mutate(
+      x,
+      county = unname(county_lookup[substr(.data$geoid, 1L, 5L)])
+    )
+  }
 
   dplyr::relocate(x, "geoid", "county")
 }
@@ -71,4 +86,11 @@ resolve_year <- function(year, fn) {
     return(year)
   }
   eval(formals(fn)$year)
+}
+
+# Map an ACS endyear to the PUMA vintage it uses. The Census Bureau
+# switched from 2010-vintage to 2020-vintage PUMAs starting with the 2022
+# 1-year and 5-year ACS releases.
+puma_vintage_for_year <- function(year) {
+  if (is.null(year) || year >= 2022) "2020" else "2010"
 }

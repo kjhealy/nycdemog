@@ -16,6 +16,7 @@ reference:
     contents:
       - nyc_counties
       - nyc_county_fips
+      - nyc_pumas
       - get_nyc_acs
       - get_nyc_decennial
       - load_nyc_variables

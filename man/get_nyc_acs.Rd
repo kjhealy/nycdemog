@@ -7,7 +7,7 @@
 get_nyc_acs(
   variables,
   year = NULL,
-  geography = c("tract", "block group"),
+  geography = c("tract", "block group", "puma"),
   survey = "acs5",
   summary_var = NULL,
   output = c("wide", "tidy"),
@@ -22,8 +22,15 @@ IDs. See \code{\link[=load_nyc_variables]{load_nyc_variables()}} or \code{\link[
 \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}} default, which is the most recent vintage that
 \code{tidycensus} supports.}
 
-\item{geography}{Geographic level. One of \code{"tract"} (default) or
-\code{"block group"}. County-level requests are intentionally not supported
+\item{geography}{Geographic level. One of \code{"tract"} (default),
+\code{"block group"}, or \code{"puma"}. For \code{"tract"} and \code{"block group"} the
+request is restricted to the five NYC counties via \code{tidycensus}'s
+\code{county} argument. For \code{"puma"}, \code{tidycensus} does not accept a
+\code{county} filter, so all NY state PUMAs are requested and then filtered
+down to the 55 NYC PUMAs using an internal crosswalk. The crosswalk
+vintage is chosen from \code{year}: ACS endyears up to and including 2021
+use the 2010 PUMA vintage, 2022 and later use the 2020 vintage. See
+\code{\link[=nyc_pumas]{nyc_pumas()}}. County-level requests are intentionally not supported
 here; use \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}} directly if you need them.}
 
 \item{survey}{ACS sample, passed to \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}}. Defaults to
@@ -43,15 +50,21 @@ followed by the requested variables. The ACS endyear actually used is
 stored in the \code{"acs_year"} attribute.
 }
 \description{
-A thin wrapper around \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}} that hard-codes the five
-New York City counties, never downloads geometry, and returns a tidy
-tibble keyed by \code{geoid} (lowercased) with a \code{county} column ready for
-joining to the spatial objects in the \code{nycmaps} package.
+A thin wrapper around \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}} that hard-codes New York
+City geographies, never downloads geometry, and returns a tidy tibble
+keyed by \code{geoid} (lowercased) with a \code{county} column (borough name) ready
+for joining to the spatial objects in the \code{nycmaps} package.
 }
 \examples{
 \dontrun{
 # Median household income, latest 5-year ACS, NYC tracts.
 get_nyc_acs(c(med_hhinc = "B19013_001"))
+
+# Same, but at the PUMA level.
+get_nyc_acs(
+  c(med_hhinc = "B19013_001"),
+  geography = "puma"
+)
 
 # Race and Hispanic origin, with total population as the denominator.
 race_vars <- c(
@@ -65,5 +78,6 @@ get_nyc_acs(race_vars, summary_var = "B03002_001")
 
 }
 \seealso{
-\code{\link[=get_nyc_decennial]{get_nyc_decennial()}}, \code{\link[=load_nyc_variables]{load_nyc_variables()}}, \code{\link[=nyc_counties]{nyc_counties()}}
+\code{\link[=get_nyc_decennial]{get_nyc_decennial()}}, \code{\link[=load_nyc_variables]{load_nyc_variables()}}, \code{\link[=nyc_counties]{nyc_counties()}},
+\code{\link[=nyc_pumas]{nyc_pumas()}}
 }

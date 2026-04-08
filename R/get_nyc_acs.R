@@ -1,17 +1,24 @@
 #' Get American Community Survey data for New York City
 #'
-#' A thin wrapper around [tidycensus::get_acs()] that hard-codes the five
-#' New York City counties, never downloads geometry, and returns a tidy
-#' tibble keyed by `geoid` (lowercased) with a `county` column ready for
-#' joining to the spatial objects in the `nycmaps` package.
+#' A thin wrapper around [tidycensus::get_acs()] that hard-codes New York
+#' City geographies, never downloads geometry, and returns a tidy tibble
+#' keyed by `geoid` (lowercased) with a `county` column (borough name) ready
+#' for joining to the spatial objects in the `nycmaps` package.
 #'
 #' @param variables A character vector (optionally named) of Census variable
 #'   IDs. See [load_nyc_variables()] or [tidycensus::load_variables()].
 #' @param year ACS endyear. If `NULL` (the default), uses the
 #'   [tidycensus::get_acs()] default, which is the most recent vintage that
 #'   `tidycensus` supports.
-#' @param geography Geographic level. One of `"tract"` (default) or
-#'   `"block group"`. County-level requests are intentionally not supported
+#' @param geography Geographic level. One of `"tract"` (default),
+#'   `"block group"`, or `"puma"`. For `"tract"` and `"block group"` the
+#'   request is restricted to the five NYC counties via `tidycensus`'s
+#'   `county` argument. For `"puma"`, `tidycensus` does not accept a
+#'   `county` filter, so all NY state PUMAs are requested and then filtered
+#'   down to the 55 NYC PUMAs using an internal crosswalk. The crosswalk
+#'   vintage is chosen from `year`: ACS endyears up to and including 2021
+#'   use the 2010 PUMA vintage, 2022 and later use the 2020 vintage. See
+#'   [nyc_pumas()]. County-level requests are intentionally not supported
 #'   here; use [tidycensus::get_acs()] directly if you need them.
 #' @param survey ACS sample, passed to [tidycensus::get_acs()]. Defaults to
 #'   `"acs5"`.
@@ -30,6 +37,12 @@
 #' # Median household income, latest 5-year ACS, NYC tracts.
 #' get_nyc_acs(c(med_hhinc = "B19013_001"))
 #'
+#' # Same, but at the PUMA level.
+#' get_nyc_acs(
+#'   c(med_hhinc = "B19013_001"),
+#'   geography = "puma"
+#' )
+#'
 #' # Race and Hispanic origin, with total population as the denominator.
 #' race_vars <- c(
 #'   nh_white = "B03002_003",
@@ -40,12 +53,13 @@
 #' get_nyc_acs(race_vars, summary_var = "B03002_001")
 #' }
 #'
-#' @seealso [get_nyc_decennial()], [load_nyc_variables()], [nyc_counties()]
+#' @seealso [get_nyc_decennial()], [load_nyc_variables()], [nyc_counties()],
+#'   [nyc_pumas()]
 #' @export
 get_nyc_acs <- function(
   variables,
   year = NULL,
-  geography = c("tract", "block group"),
+  geography = c("tract", "block group", "puma"),
   survey = "acs5",
   summary_var = NULL,
   output = c("wide", "tidy"),
@@ -57,20 +71,39 @@ get_nyc_acs <- function(
 
   year <- resolve_year(year, tidycensus::get_acs)
 
-  result <- tidycensus::get_acs(
-    geography = geography,
-    variables = variables,
-    year = year,
-    survey = survey,
-    state = "NY",
-    county = nyc_counties(),
-    summary_var = unname(summary_var),
-    geometry = FALSE,
-    output = "tidy",
-    ...
-  )
+  result <- if (geography == "puma") {
+    tidycensus::get_acs(
+      geography = "puma",
+      variables = variables,
+      year = year,
+      survey = survey,
+      state = "NY",
+      summary_var = unname(summary_var),
+      geometry = FALSE,
+      output = "tidy",
+      ...
+    )
+  } else {
+    tidycensus::get_acs(
+      geography = geography,
+      variables = variables,
+      year = year,
+      survey = survey,
+      state = "NY",
+      county = nyc_counties(),
+      summary_var = unname(summary_var),
+      geometry = FALSE,
+      output = "tidy",
+      ...
+    )
+  }
 
-  result <- tidy_census_result(result, output = output)
+  result <- tidy_census_result(
+    result,
+    output = output,
+    geography = geography,
+    vintage = puma_vintage_for_year(year)
+  )
   attr(result, "acs_year") <- year
   attr(result, "acs_survey") <- survey
   result
