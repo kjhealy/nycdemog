@@ -34,3 +34,5 @@ URL: https://kjhealy.github.io/nycdemog/,
     https://github.com/kjhealy/nycdemog
 BugReports: https://github.com/kjhealy/nycdemog/issues
 Config/roxygen2/version: 8.1.0
+Remotes:
+    kjhealy/nycmaps
