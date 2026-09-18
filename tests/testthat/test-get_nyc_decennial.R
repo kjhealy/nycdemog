@@ -33,9 +33,19 @@ make_fake_get_decennial <- function(env) {
     )
     var_names <- if (is.null(names(variables))) variables else names(variables)
     n_var <- length(var_names)
+    geoids <- if (geography == "county") {
+      c("36061", "36047")
+    } else {
+      c("36061000100", "36047000100")
+    }
+    names_col <- if (geography == "county") {
+      c("New York County, New York", "Kings County, New York")
+    } else {
+      c("Tract 1, NY", "Tract 1, Kings")
+    }
     out <- tibble::tibble(
-      GEOID = rep(c("36061000100", "36047000100"), times = n_var),
-      NAME = rep(c("Tract 1, NY", "Tract 1, Kings"), times = n_var),
+      GEOID = rep(geoids, times = n_var),
+      NAME = rep(names_col, times = n_var),
       variable = rep(var_names, each = 2L),
       value = seq_len(2L * n_var) * 100
     )
@@ -91,4 +101,26 @@ test_that("get_nyc_decennial returns wide output with single value column", {
   expect_true("summary_value" %in% names(res))
   expect_null(names(env$last_call$summary_var))
   expect_identical(attr(res, "decennial_sumfile"), "pl")
+})
+
+test_that("get_nyc_decennial supports county geography", {
+  withr::local_envvar(CENSUS_API_KEY = "fake")
+  env <- new.env()
+  testthat::local_mocked_bindings(
+    get_decennial = make_fake_get_decennial(env),
+    .package = "tidycensus"
+  )
+
+  res <- get_nyc_decennial(
+    c(total_pop = "P1_001N"),
+    geography = "county",
+    sumfile = "pl"
+  )
+
+  expect_equal(env$last_call$geography, "county")
+  expect_equal(env$last_call$state, "NY")
+  expect_setequal(env$last_call$county, nyc_counties())
+  expect_equal(names(res)[1:2], c("geoid", "county"))
+  expect_setequal(res$geoid, c("36061", "36047"))
+  expect_setequal(res$county, c("New York", "Kings"))
 })

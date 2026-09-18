@@ -34,7 +34,9 @@ make_fake_get_acs <- function(env) {
       output = output
     )
     var_names <- if (is.null(names(variables))) variables else names(variables)
-    geoids <- if (geography == "puma") {
+    geoids <- if (geography == "county") {
+      c("36061", "36047")
+    } else if (geography == "puma") {
       # Two NYC PUMAs (one 2020-vintage, one 2010-vintage, plus one
       # upstate NY PUMA that should be filtered out) so tests can verify
       # NYC filtering and vintage selection.
@@ -46,7 +48,9 @@ make_fake_get_acs <- function(env) {
     } else {
       c("36061000100", "36047000100")
     }
-    names_col <- if (geography == "puma") {
+    names_col <- if (geography == "county") {
+      c("New York County, New York", "Kings County, New York")
+    } else if (geography == "puma") {
       c("NYC PUMA A", "NYC PUMA B", "Upstate PUMA")
     } else {
       c("Tract 1, NY", "Tract 1, Kings")
@@ -196,4 +200,22 @@ test_that("get_nyc_acs puma uses the 2010 vintage for pre-2022 endyears", {
   # 2010-vintage NYC PUMAs: 03701 is Bronx, 04001 is Brooklyn.
   expect_setequal(res$geoid, c("3603701", "3604001"))
   expect_setequal(res$county, c("Bronx", "Kings"))
+})
+
+test_that("get_nyc_acs county requests pass state and NYC counties", {
+  withr::local_envvar(CENSUS_API_KEY = "fake")
+  env <- new.env()
+  testthat::local_mocked_bindings(
+    get_acs = make_fake_get_acs(env),
+    .package = "tidycensus"
+  )
+
+  res <- get_nyc_acs(c(med_hhinc = "B19013_001"), geography = "county")
+
+  expect_equal(env$last_call$geography, "county")
+  expect_equal(env$last_call$state, "NY")
+  expect_setequal(env$last_call$county, nyc_counties())
+  expect_equal(names(res)[1:2], c("geoid", "county"))
+  expect_setequal(res$geoid, c("36061", "36047"))
+  expect_setequal(res$county, c("New York", "Kings"))
 })

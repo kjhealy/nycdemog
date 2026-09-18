@@ -10,7 +10,7 @@
 #' @param year Decennial Census year. Defaults to `2020`. `2000` and `2010`
 #'   are also accepted by `tidycensus`.
 #' @param geography Geographic level. One of `"tract"` (default), `"block"`,
-#'   or `"block group"`.
+#'   `"block group"`, or `"county"`.
 #' @param sumfile Census summary file. Defaults to `"pl"` (the redistricting
 #'   file). For tract-level demographic and housing characteristics use
 #'   `"dhc"`.
@@ -45,6 +45,13 @@
 #'   geography = "tract",
 #'   sumfile = "dhc"
 #' )
+#'
+#' # 2020 PL 94-171 total population, one row per borough.
+#' get_nyc_decennial(
+#'   c(total_pop = "P1_001N"),
+#'   geography = "county",
+#'   sumfile = "pl"
+#' )
 #' }
 #'
 #' @seealso [get_nyc_acs()], [load_nyc_variables()], [nyc_counties()]
@@ -52,7 +59,7 @@
 get_nyc_decennial <- function(
   variables,
   year = 2020,
-  geography = c("tract", "block", "block group"),
+  geography = c("tract", "block", "block group", "county"),
   sumfile = "pl",
   summary_var = NULL,
   output = c("wide", "tidy"),

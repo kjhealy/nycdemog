@@ -7,17 +7,20 @@
 
 <!-- badges: end -->
 
-The nycdemog package provides tract- and block-level demographic data
-for the five counties of New York City, derived from the US Census
-Bureau via [tidycensus](https://walker-data.com/tidycensus/). It
-provides a set of tibbles keyed by `geoid` covering race, age and sex,
-household structure, income and poverty, education, employment, housing,
-and language and nativity, alongside thin wrapper functions that help
-you make NYC-only queries against the Census API.
+The nycdemog package provides county-, tract-, and block-level
+demographic data for the five counties of New York City, derived from
+the US Census Bureau via
+[tidycensus](https://walker-data.com/tidycensus/). It provides a set of
+tibbles keyed by `geoid` covering race, age and sex, household
+structure, income and poverty, education, employment, housing, and
+language and nativity, alongside thin wrapper functions that help you
+make NYC-only queries against the Census API.
 
-All datasets join 1:1 to corresponding `sf` objects in the
-[nycmaps](https://github.com/kjhealy/nycmaps) package, on the `geoid`
-column.
+The tract- and block-level datasets join 1:1 to corresponding `sf`
+objects in the [nycmaps](https://github.com/kjhealy/nycmaps) package, on
+the `geoid` column. The county-level datasets join to
+`nycmaps::nyc_boros_sf` on the `county` column, which matches
+`nycmaps::nyc_boros$short_county_name`.
 
 ## Installation
 
@@ -66,18 +69,28 @@ nyc_tract_acs_income_df
 
 The full set:
 
-| Object                               | Source               | Geography | Rows   |
-|--------------------------------------|----------------------|-----------|--------|
-| `nyc_block_20_race_df`               | 2020 Decennial PL    | block     | 37,984 |
-| `nyc_block_20_adults_df`             | 2020 Decennial PL    | block     | 37,984 |
-| `nyc_tract_20_age_sex_df`            | 2020 Decennial DHC   | tract     | 2,327  |
-| `nyc_tract_20_household_df`          | 2020 Decennial DHC   | tract     | 2,327  |
-| `nyc_tract_acs_race_df`              | 2020-2024 ACS 5-year | tract     | 2,327  |
-| `nyc_tract_acs_income_df`            | 2020-2024 ACS 5-year | tract     | 2,327  |
-| `nyc_tract_acs_education_df`         | 2020-2024 ACS 5-year | tract     | 2,327  |
-| `nyc_tract_acs_employment_df`        | 2020-2024 ACS 5-year | tract     | 2,327  |
-| `nyc_tract_acs_housing_df`           | 2020-2024 ACS 5-year | tract     | 2,327  |
-| `nyc_tract_acs_language_nativity_df` | 2020-2024 ACS 5-year | tract     | 2,327  |
+| Object                                | Source               | Geography | Rows   |
+|---------------------------------------|----------------------|-----------|--------|
+| `nyc_block_20_race_df`                | 2020 Decennial PL    | block     | 37,984 |
+| `nyc_block_20_adults_df`              | 2020 Decennial PL    | block     | 37,984 |
+| `nyc_tract_20_age_sex_df`             | 2020 Decennial DHC   | tract     | 2,327  |
+| `nyc_tract_20_household_df`           | 2020 Decennial DHC   | tract     | 2,327  |
+| `nyc_tract_acs_race_df`               | 2020-2024 ACS 5-year | tract     | 2,327  |
+| `nyc_tract_acs_income_df`             | 2020-2024 ACS 5-year | tract     | 2,327  |
+| `nyc_tract_acs_education_df`          | 2020-2024 ACS 5-year | tract     | 2,327  |
+| `nyc_tract_acs_employment_df`         | 2020-2024 ACS 5-year | tract     | 2,327  |
+| `nyc_tract_acs_housing_df`            | 2020-2024 ACS 5-year | tract     | 2,327  |
+| `nyc_tract_acs_language_nativity_df`  | 2020-2024 ACS 5-year | tract     | 2,327  |
+| `nyc_county_20_race_df`               | 2020 Decennial PL    | county    | 5      |
+| `nyc_county_20_adults_df`             | 2020 Decennial PL    | county    | 5      |
+| `nyc_county_20_age_sex_df`            | 2020 Decennial DHC   | county    | 5      |
+| `nyc_county_20_household_df`          | 2020 Decennial DHC   | county    | 5      |
+| `nyc_county_acs_race_df`              | 2020-2024 ACS 5-year | county    | 5      |
+| `nyc_county_acs_income_df`            | 2020-2024 ACS 5-year | county    | 5      |
+| `nyc_county_acs_education_df`         | 2020-2024 ACS 5-year | county    | 5      |
+| `nyc_county_acs_employment_df`        | 2020-2024 ACS 5-year | county    | 5      |
+| `nyc_county_acs_housing_df`           | 2020-2024 ACS 5-year | county    | 5      |
+| `nyc_county_acs_language_nativity_df` | 2020-2024 ACS 5-year | county    | 5      |
 
 ## Wrapper functions
 
@@ -108,6 +121,9 @@ get_nyc_decennial(
   sumfile = "pl",
   summary_var = "P1_001N"
 )
+
+# One row per borough
+get_nyc_acs(c(med_hhinc = "B19013_001"), geography = "county")
 ```
 
 Use `load_nyc_variables()` to browse the variable catalogues:
@@ -120,8 +136,10 @@ load_nyc_variables(2020, "dhc")
 
 ## Joining to nycmaps
 
-Every stored tibble joins on `geoid` to the matching `sf` object in
-`nycmaps`. Mapping median household income across NYC tracts:
+Every stored tract- or block-level tibble joins on `geoid` to the
+matching `sf` object in `nycmaps`; the county-level tibbles join to
+`nycmaps::nyc_boros_sf` on `county`. Mapping median household income
+across NYC tracts:
 
 ``` r
 library(dplyr)

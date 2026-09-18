@@ -7,7 +7,7 @@
 get_nyc_decennial(
   variables,
   year = 2020,
-  geography = c("tract", "block", "block group"),
+  geography = c("tract", "block", "block group", "county"),
   sumfile = "pl",
   summary_var = NULL,
   output = c("wide", "tidy"),
@@ -22,7 +22,7 @@ IDs. See \code{\link[=load_nyc_variables]{load_nyc_variables()}} or \code{\link[
 are also accepted by \code{tidycensus}.}
 
 \item{geography}{Geographic level. One of \code{"tract"} (default), \code{"block"},
-or \code{"block group"}.}
+\code{"block group"}, or \code{"county"}.}
 
 \item{sumfile}{Census summary file. Defaults to \code{"pl"} (the redistricting
 file). For tract-level demographic and housing characteristics use
@@ -67,6 +67,13 @@ get_nyc_decennial(
   c(family_hh = "H9_002N", nonfamily_hh = "H9_009N"),
   geography = "tract",
   sumfile = "dhc"
+)
+
+# 2020 PL 94-171 total population, one row per borough.
+get_nyc_decennial(
+  c(total_pop = "P1_001N"),
+  geography = "county",
+  sumfile = "pl"
 )
 }
 

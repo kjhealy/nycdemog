@@ -160,3 +160,159 @@ test_that("ACS tract tibbles have geoid + county and expected columns", {
     expect_gt(nrow(o), 2000L)
   }
 })
+
+test_that("2020 Decennial county tibbles are valid NYC-keyed tibbles", {
+  expect_nyc_keyed_tibble(
+    nyc_county_20_race_df,
+    c(
+      "total_pop",
+      "nh_white_alone",
+      "nh_black_alone",
+      "nh_asian_alone",
+      "hispanic",
+      "nh_white_prop",
+      "hispanic_prop"
+    )
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_20_adults_df,
+    c("total_pop", "adults", "children")
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_20_age_sex_df,
+    c(
+      "total_pop",
+      "male",
+      "female",
+      "age_under_5",
+      "age_5_17",
+      "age_18_24",
+      "age_25_34",
+      "age_35_44",
+      "age_45_54",
+      "age_55_64",
+      "age_65_74",
+      "age_75_84",
+      "age_85_plus"
+    )
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_20_household_df,
+    c(
+      "total_households",
+      "family_households",
+      "nonfamily_households",
+      "married_couple",
+      "living_alone",
+      "family_prop",
+      "living_alone_prop"
+    )
+  )
+  for (o in list(
+    nyc_county_20_race_df,
+    nyc_county_20_adults_df,
+    nyc_county_20_age_sex_df,
+    nyc_county_20_household_df
+  )) {
+    expect_equal(nrow(o), 5L)
+    expect_true(all(nchar(o$geoid) == 5L))
+  }
+  expect_equal(
+    nyc_county_20_adults_df$total_pop,
+    nyc_county_20_adults_df$adults + nyc_county_20_adults_df$children
+  )
+  with(nyc_county_20_age_sex_df, {
+    expect_equal(male + female, total_pop)
+    expect_equal(
+      age_under_5 +
+        age_5_17 +
+        age_18_24 +
+        age_25_34 +
+        age_35_44 +
+        age_45_54 +
+        age_55_64 +
+        age_65_74 +
+        age_75_84 +
+        age_85_plus,
+      total_pop
+    )
+  })
+  with(nyc_county_20_household_df, {
+    expect_equal(family_households + nonfamily_households, total_households)
+  })
+})
+
+test_that("ACS county tibbles have geoid + county and expected columns", {
+  expect_nyc_keyed_tibble(
+    nyc_county_acs_race_df,
+    c(
+      "total_pop",
+      "nh_white",
+      "hispanic",
+      "nh_white_moe",
+      "hispanic_moe",
+      "hispanic_prop"
+    )
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_acs_income_df,
+    c("med_hhinc", "med_hhinc_moe", "poverty_rate")
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_acs_education_df,
+    c(
+      "edu_total",
+      "edu_bachelors",
+      "bachelors_or_higher",
+      "bachelors_or_higher_prop"
+    )
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_acs_employment_df,
+    c("lf_total", "lf_employed", "lf_unemployed", "unemployment_rate")
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_acs_housing_df,
+    c(
+      "hu_total",
+      "tenure_owner",
+      "tenure_renter",
+      "median_value",
+      "owner_occupied_prop"
+    )
+  )
+  expect_nyc_keyed_tibble(
+    nyc_county_acs_language_nativity_df,
+    c("lang_total", "lang_english_only", "foreign_born", "foreign_born_prop")
+  )
+  for (o in list(
+    nyc_county_acs_race_df,
+    nyc_county_acs_income_df,
+    nyc_county_acs_education_df,
+    nyc_county_acs_employment_df,
+    nyc_county_acs_housing_df,
+    nyc_county_acs_language_nativity_df
+  )) {
+    expect_equal(nrow(o), 5L)
+    expect_setequal(o$geoid, unname(nyc_county_fips()))
+  }
+})
+
+test_that("county tables aggregate consistently with their tract counterparts", {
+  tract_totals <- tapply(
+    nyc_tract_20_household_df$total_households,
+    nyc_tract_20_household_df$county,
+    sum
+  )
+  county_totals <- stats::setNames(
+    nyc_county_20_household_df$total_households,
+    nyc_county_20_household_df$county
+  )
+  expect_equal(
+    county_totals[names(tract_totals)],
+    tract_totals[names(
+      tract_totals
+    )],
+    ignore_attr = TRUE
+  )
+})

@@ -7,7 +7,7 @@
 get_nyc_acs(
   variables,
   year = NULL,
-  geography = c("tract", "block group", "puma"),
+  geography = c("tract", "block group", "county", "puma"),
   survey = "acs5",
   summary_var = NULL,
   output = c("wide", "tidy"),
@@ -23,15 +23,14 @@ IDs. See \code{\link[=load_nyc_variables]{load_nyc_variables()}} or \code{\link[
 \code{tidycensus} supports.}
 
 \item{geography}{Geographic level. One of \code{"tract"} (default),
-\code{"block group"}, or \code{"puma"}. For \code{"tract"} and \code{"block group"} the
-request is restricted to the five NYC counties via \code{tidycensus}'s
-\code{county} argument. For \code{"puma"}, \code{tidycensus} does not accept a
-\code{county} filter, so all NY state PUMAs are requested and then filtered
-down to the 55 NYC PUMAs using an internal crosswalk. The crosswalk
-vintage is chosen from \code{year}: ACS endyears up to and including 2021
-use the 2010 PUMA vintage, 2022 and later use the 2020 vintage. See
-\code{\link[=nyc_pumas]{nyc_pumas()}}. County-level requests are intentionally not supported
-here; use \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}} directly if you need them.}
+\code{"block group"}, \code{"county"}, or \code{"puma"}. For \code{"tract"},
+\code{"block group"}, and \code{"county"} the request is restricted to the five
+NYC counties via \code{tidycensus}'s \code{county} argument. For \code{"puma"},
+\code{tidycensus} does not accept a \code{county} filter, so all NY state PUMAs
+are requested and then filtered down to the 55 NYC PUMAs using an
+internal crosswalk. The crosswalk vintage is chosen from \code{year}: ACS
+endyears up to and including 2021 use the 2010 PUMA vintage, 2022 and
+later use the 2020 vintage. See \code{\link[=nyc_pumas]{nyc_pumas()}}.}
 
 \item{survey}{ACS sample, passed to \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}}. Defaults to
 \code{"acs5"}.}
@@ -64,6 +63,12 @@ get_nyc_acs(c(med_hhinc = "B19013_001"))
 get_nyc_acs(
   c(med_hhinc = "B19013_001"),
   geography = "puma"
+)
+
+# Same, but one row per borough.
+get_nyc_acs(
+  c(med_hhinc = "B19013_001"),
+  geography = "county"
 )
 
 # Race and Hispanic origin, with total population as the denominator.

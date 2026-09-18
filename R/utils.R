@@ -27,11 +27,12 @@ check_census_key <- function(call = rlang::caller_env()) {
 # Standardise a tidycensus result for NYC use.
 #
 # - Lowercase column names
-# - Move `geoid` to the front and add a `county` label. For tract / block /
-#   block group results, the county is derived from the first five
-#   characters of `geoid`. For PUMA results, the county (borough) is
-#   looked up from the internal NYC PUMA crosswalk using the supplied
-#   `vintage`, and rows outside NYC are dropped.
+# - Move `geoid` to the front and add a `county` label. For county / tract /
+#   block / block group results, the county is derived from the first five
+#   characters of `geoid` (for county results that is the whole `geoid`).
+#   For PUMA results, the county (borough) is looked up from the internal
+#   NYC PUMA crosswalk using the supplied `vintage`, and rows outside NYC
+#   are dropped.
 # - Optionally pivot from tidy long to wide
 tidy_census_result <- function(
   x,

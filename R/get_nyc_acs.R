@@ -11,15 +11,14 @@
 #'   [tidycensus::get_acs()] default, which is the most recent vintage that
 #'   `tidycensus` supports.
 #' @param geography Geographic level. One of `"tract"` (default),
-#'   `"block group"`, or `"puma"`. For `"tract"` and `"block group"` the
-#'   request is restricted to the five NYC counties via `tidycensus`'s
-#'   `county` argument. For `"puma"`, `tidycensus` does not accept a
-#'   `county` filter, so all NY state PUMAs are requested and then filtered
-#'   down to the 55 NYC PUMAs using an internal crosswalk. The crosswalk
-#'   vintage is chosen from `year`: ACS endyears up to and including 2021
-#'   use the 2010 PUMA vintage, 2022 and later use the 2020 vintage. See
-#'   [nyc_pumas()]. County-level requests are intentionally not supported
-#'   here; use [tidycensus::get_acs()] directly if you need them.
+#'   `"block group"`, `"county"`, or `"puma"`. For `"tract"`,
+#'   `"block group"`, and `"county"` the request is restricted to the five
+#'   NYC counties via `tidycensus`'s `county` argument. For `"puma"`,
+#'   `tidycensus` does not accept a `county` filter, so all NY state PUMAs
+#'   are requested and then filtered down to the 55 NYC PUMAs using an
+#'   internal crosswalk. The crosswalk vintage is chosen from `year`: ACS
+#'   endyears up to and including 2021 use the 2010 PUMA vintage, 2022 and
+#'   later use the 2020 vintage. See [nyc_pumas()].
 #' @param survey ACS sample, passed to [tidycensus::get_acs()]. Defaults to
 #'   `"acs5"`.
 #' @param summary_var Optional summary (denominator) variable.
@@ -43,6 +42,12 @@
 #'   geography = "puma"
 #' )
 #'
+#' # Same, but one row per borough.
+#' get_nyc_acs(
+#'   c(med_hhinc = "B19013_001"),
+#'   geography = "county"
+#' )
+#'
 #' # Race and Hispanic origin, with total population as the denominator.
 #' race_vars <- c(
 #'   nh_white = "B03002_003",
@@ -59,7 +64,7 @@
 get_nyc_acs <- function(
   variables,
   year = NULL,
-  geography = c("tract", "block group", "puma"),
+  geography = c("tract", "block group", "county", "puma"),
   survey = "acs5",
   summary_var = NULL,
   output = c("wide", "tidy"),

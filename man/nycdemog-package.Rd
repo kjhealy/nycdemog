@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Kieran Healy \email{kjhealy@gmail.com} (\href{https://orcid.org/0000-0001-9114-981X}{ORCID})
 
+Authors:
+\itemize{
+  \item Kieran Healy \email{kjhealy@gmail.com} (\href{https://orcid.org/0000-0001-9114-981X}{ORCID})
+}
+
 }
 \keyword{internal}
