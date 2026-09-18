@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/kjhealy/nycdemog/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kjhealy/nycdemog/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The nycdemog package provides county-, tract-, and block-level
