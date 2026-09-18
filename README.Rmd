@@ -49,7 +49,7 @@ environment variable.
 
 ## Stored datasets
 
-Every shipped tibble has `geoid` and `county` as its first two columns. ACS
+Every tibble has `geoid` and `county` as its first two columns. ACS
 estimates have `_moe` margin-of-error columns.
 
 ```{r stored}
@@ -59,7 +59,7 @@ library(nycdemog)
 nyc_tract_acs_income_df
 ```
 
-The full set:
+Full list:
 
 | Object | Source | Geography | Rows |
 |---|---|---|---|

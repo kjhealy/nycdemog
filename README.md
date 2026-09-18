@@ -40,8 +40,8 @@ key](https://api.census.gov/data/key_signup.html), set as the
 
 ## Stored datasets
 
-Every shipped tibble has `geoid` and `county` as its first two columns.
-ACS estimates have `_moe` margin-of-error columns.
+Every tibble has `geoid` and `county` as its first two columns. ACS
+estimates have `_moe` margin-of-error columns.
 
 ``` r
 library(tibble)
@@ -68,7 +68,7 @@ nyc_tract_acs_income_df
 #> #   poverty_rate <dbl>
 ```
 
-The full set:
+Full list:
 
 | Object                                | Source               | Geography | Rows   |
 |---------------------------------------|----------------------|-----------|--------|
